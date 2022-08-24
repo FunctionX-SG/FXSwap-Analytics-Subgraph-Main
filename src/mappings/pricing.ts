@@ -53,10 +53,10 @@ export function getEthPriceInUSD(): BigDecimal {
 // NOTE: alphabets must all be in lower case
 
 let WHITELIST: string[] = [
-  "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd", //WFX (Wrapped FX) 
+  "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd", //WFX (Wrapped FX)
   "0x50de24b3f0b3136c50fa8a3b8ebc8bd80a269ce5", // DAI 
   "0xce7c54149b6f04e8e6c402045fdbd16418bf4ddd", // USDC
-  "0xeceeefcee421d8062ef8d6b4d814efe4dc898265", // USDT 
+  "0xeceeefcee421d8062ef8d6b4d814efe4dc898265", // USDT
   "0x0000000000085d4780b73119b644ae5ecd22b376", // TUSD
   "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643", // cDAI
   "0x39aa39c021dfbae8fac545936693ac917d5e7563", // cUSDC
@@ -73,8 +73,8 @@ let WHITELIST: string[] = [
   "0xa47c8bf37f92abed4a126bda807a7b7498661acd", // WUST
   "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", // UNI
   "0x1002070f3719127367a68485f882e7dac3582ea9", // WBTC
-  "​​0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75", // pundix
-  "​​0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687", // PURSE
+  "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75", // pundix
+  "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687", // PURSE
 ];
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps

@@ -9,7 +9,7 @@ dataSources:
       address: "0x9E229BE3812228454499FAf771b296bedFe8c904"
       abi: Factory
     mapping:
-      kind: ethereum/events
+     kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
