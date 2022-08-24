@@ -144,34 +144,35 @@ export function getTrackedVolumeUSD(
 
   // if less than 5 LPs, require high minimum reserve amount amount or return 0
   // if less than 1 LPs, require high minimum reserve amount amount or return 0
-  if (pair.liquidityProviderCount.lt(BigInt.fromI32(1))) {
-    //if (pair.liquidityProviderCount.lt(BigInt.fromI32(5))) { // Issei
-    let reserve0USD = pair.reserve0.times(price0);
-    let reserve1USD = pair.reserve1.times(price1);
-    if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
-      if (reserve0USD.plus(reserve1USD).lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)) {
-        return ZERO_BD;
-      }
-    }
-    if (WHITELIST.includes(token0.id) && !WHITELIST.includes(token1.id)) {
-      if (
-        reserve0USD
-          .times(BigDecimal.fromString("2"))
-          .lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
-      ) {
-        return ZERO_BD;
-      }
-    }
-    if (!WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
-      if (
-        reserve1USD
-          .times(BigDecimal.fromString("2"))
-          .lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
-      ) {
-        return ZERO_BD;
-      }
-    }
-  }
+  // Issei: removed all this because we want to track liquidity regardless for how many providers.
+  // if (pair.liquidityProviderCount.lt(BigInt.fromI32(1))) {
+  //   //if (pair.liquidityProviderCount.lt(BigInt.fromI32(5))) { // Issei
+  //   let reserve0USD = pair.reserve0.times(price0);
+  //   let reserve1USD = pair.reserve1.times(price1);
+  //   if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+  //     if (reserve0USD.plus(reserve1USD).lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)) {
+  //       return ZERO_BD;
+  //     }
+  //   }
+  //   if (WHITELIST.includes(token0.id) && !WHITELIST.includes(token1.id)) {
+  //     if (
+  //       reserve0USD
+  //         .times(BigDecimal.fromString("2"))
+  //         .lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
+  //     ) {
+  //       return ZERO_BD;
+  //     }
+  //   }
+  //   if (!WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
+  //     if (
+  //       reserve1USD
+  //         .times(BigDecimal.fromString("2"))
+  //         .lt(MINIMUM_USD_THRESHOLD_NEW_PAIRS)
+  //     ) {
+  //       return ZERO_BD;
+  //     }
+  //   }
+  // }
 
   // both are whitelist tokens, take average of both amounts
   if (WHITELIST.includes(token0.id) && WHITELIST.includes(token1.id)) {
