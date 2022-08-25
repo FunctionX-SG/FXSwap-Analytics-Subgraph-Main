@@ -103,18 +103,16 @@ export function findEthPerToken(token: Token): BigDecimal {
       let pair = Pair.load(pairAddress.toHexString());
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        // pair.token0 == token.id &&
-        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
-        pair.token0 == token.id
+        pair.token0 == token.id &&
+        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
       ) {
         let token1 = Token.load(pair.token1);
         return pair.token1Price.times(token1.derivedETH as BigDecimal); // return token1 per our token * Eth per token 1
       }
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        // pair.token1 == token.id &&
-        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
-        pair.token1 == token.id
+        pair.token1 == token.id &&
+        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
       ) {
         let token0 = Token.load(pair.token0);
         return pair.token0Price.times(token0.derivedETH as BigDecimal); // return token0 per our token * ETH per token 0
