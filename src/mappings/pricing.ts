@@ -33,8 +33,8 @@ export function getEthPriceInUSD(): BigDecimal {
       .times(daiWeight)
       .plus(usdcPair.token0Price.times(usdcWeight))
       .plus(usdtPair.token0Price.times(usdtWeight));
-    
-    // Issei: commented out 
+
+    // Issei: commented out
     // let totalLiquidityETH = daiPair.reserve1
     //   .plus(usdcPair.reserve1)
     //   .plus(usdtPair.reserve0);
@@ -66,7 +66,7 @@ export function getEthPriceInUSD(): BigDecimal {
 
 let WHITELIST: string[] = [
   "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd", //WFX (Wrapped FX)
-  "0x50de24b3f0b3136c50fa8a3b8ebc8bd80a269ce5", // DAI 
+  "0x50de24b3f0b3136c50fa8a3b8ebc8bd80a269ce5", // DAI
   "0xce7c54149b6f04e8e6c402045fdbd16418bf4ddd", // USDC
   "0xeceeefcee421d8062ef8d6b4d814efe4dc898265", // USDT
   "0x0000000000085d4780b73119b644ae5ecd22b376", // TUSD
@@ -115,18 +115,16 @@ export function findEthPerToken(token: Token): BigDecimal {
       let pair = Pair.load(pairAddress.toHexString());
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        // pair.token0 == token.id &&
-        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
-        pair.token0 == token.id
+        pair.token0 == token.id &&
+        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
       ) {
         let token1 = Token.load(pair.token1);
         return pair.token1Price.times(token1.derivedETH as BigDecimal); // return token1 per our token * Eth per token 1
       }
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        // pair.token1 == token.id &&
-        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
-        pair.token1 == token.id
+        pair.token1 == token.id &&
+        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
       ) {
         let token0 = Token.load(pair.token0);
         return pair.token0Price.times(token0.derivedETH as BigDecimal); // return token0 per our token * ETH per token 0
