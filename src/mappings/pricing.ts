@@ -23,16 +23,28 @@ export function getEthPriceInUSD(): BigDecimal {
 
   // all 3 have been created
   if (daiPair !== null && usdcPair !== null && usdtPair !== null) {
-    let totalLiquidityETH = daiPair.reserve1
-      .plus(usdcPair.reserve1)
+    let totalLiquidityETH = daiPair.reserve0
+      .plus(usdcPair.reserve0)
       .plus(usdtPair.reserve0);
-    let daiWeight = daiPair.reserve1.div(totalLiquidityETH);
-    let usdcWeight = usdcPair.reserve1.div(totalLiquidityETH);
+    let daiWeight = daiPair.reserve0.div(totalLiquidityETH);
+    let usdcWeight = usdcPair.reserve0.div(totalLiquidityETH);
     let usdtWeight = usdtPair.reserve0.div(totalLiquidityETH);
-    return daiPair.token0Price
+    return daiPair.token1Price
       .times(daiWeight)
-      .plus(usdcPair.token0Price.times(usdcWeight))
+      .plus(usdcPair.token1Price.times(usdcWeight))
       .plus(usdtPair.token1Price.times(usdtWeight));
+    
+    // Issei: commented out 
+    // let totalLiquidityETH = daiPair.reserve1
+    //   .plus(usdcPair.reserve1)
+    //   .plus(usdtPair.reserve0);
+    // let daiWeight = daiPair.reserve1.div(totalLiquidityETH);
+    // let usdcWeight = usdcPair.reserve1.div(totalLiquidityETH);
+    // let usdtWeight = usdtPair.reserve0.div(totalLiquidityETH);
+    // return daiPair.token0Price
+    //   .times(daiWeight)
+    //   .plus(usdcPair.token0Price.times(usdcWeight))
+    //   .plus(usdtPair.token1Price.times(usdtWeight));
     // dai and USDC have been created
   } else if (daiPair !== null && usdcPair !== null) {
     let totalLiquidityETH = daiPair.reserve1.plus(usdcPair.reserve1);
@@ -103,16 +115,18 @@ export function findEthPerToken(token: Token): BigDecimal {
       let pair = Pair.load(pairAddress.toHexString());
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        pair.token0 == token.id &&
-        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        // pair.token0 == token.id &&
+        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        pair.token0 == token.id
       ) {
         let token1 = Token.load(pair.token1);
         return pair.token1Price.times(token1.derivedETH as BigDecimal); // return token1 per our token * Eth per token 1
       }
       if (
         // Issei: commented out because of MINIMUM_LIQUIDITY_THRESHOLD_ETH
-        pair.token1 == token.id &&
-        pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        // pair.token1 == token.id &&
+        // pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)
+        pair.token1 == token.id
       ) {
         let token0 = Token.load(pair.token0);
         return pair.token0Price.times(token0.derivedETH as BigDecimal); // return token0 per our token * ETH per token 0
