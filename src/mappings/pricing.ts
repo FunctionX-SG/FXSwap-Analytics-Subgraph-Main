@@ -23,16 +23,16 @@ export function getEthPriceInUSD(): BigDecimal {
 
   // all 3 have been created
   if (daiPair !== null && usdcPair !== null && usdtPair !== null) {
-    let totalLiquidityETH = daiPair.reserve0
-      .plus(usdcPair.reserve0)
-      .plus(usdtPair.reserve0);
-    let daiWeight = daiPair.reserve0.div(totalLiquidityETH);
-    let usdcWeight = usdcPair.reserve0.div(totalLiquidityETH);
-    let usdtWeight = usdtPair.reserve0.div(totalLiquidityETH);
-    return daiPair.token1Price
+    let totalLiquidityETH = daiPair.reserve1
+      .plus(usdcPair.reserve1)
+      .plus(usdtPair.reserve1);
+    let daiWeight = daiPair.reserve1.div(totalLiquidityETH);
+    let usdcWeight = usdcPair.reserve1.div(totalLiquidityETH);
+    let usdtWeight = usdtPair.reserve1.div(totalLiquidityETH);
+    return daiPair.token0Price
       .times(daiWeight)
-      .plus(usdcPair.token1Price.times(usdcWeight))
-      .plus(usdtPair.token1Price.times(usdtWeight));
+      .plus(usdcPair.token0Price.times(usdcWeight))
+      .plus(usdtPair.token0Price.times(usdtWeight));
     
     // Issei: commented out 
     // let totalLiquidityETH = daiPair.reserve1
