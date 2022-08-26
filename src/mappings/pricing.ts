@@ -29,10 +29,10 @@ export function getEthPriceInUSD(): BigDecimal {
     let daiWeight = daiPair.reserve1.div(totalLiquidityETH);
     let usdcWeight = usdcPair.reserve1.div(totalLiquidityETH);
     let usdtWeight = usdtPair.reserve1.div(totalLiquidityETH);
-    return daiPair.token0Price
+    return daiPair.token1Price
       .times(daiWeight)
-      .plus(usdcPair.token0Price.times(usdcWeight))
-      .plus(usdtPair.token0Price.times(usdtWeight));
+      .plus(usdcPair.token1Price.times(usdcWeight))
+      .plus(usdtPair.token1Price.times(usdtWeight));
 
     // Issei: commented out
     // let totalLiquidityETH = daiPair.reserve1
