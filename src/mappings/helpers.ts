@@ -4,6 +4,7 @@ import {
   BigInt,
   BigDecimal,
   Address,
+  ethereum
 } from "@graphprotocol/graph-ts";
 import { ERC20 } from "../types/Factory/ERC20";
 import { ERC20SymbolBytes } from "../types/Factory/ERC20SymbolBytes";
@@ -124,12 +125,12 @@ export function fetchTokenName(tokenAddress: Address): string {
 
 export function fetchTokenTotalSupply(tokenAddress: Address): BigInt {
   let contract = ERC20.bind(tokenAddress);
-  let totalSupplyValue = null;
+  let totalSupplyValue = BigInt.fromI32(0);
   let totalSupplyResult = contract.try_totalSupply();
   if (!totalSupplyResult.reverted) {
-    totalSupplyValue = totalSupplyResult as i32;
+    totalSupplyValue = totalSupplyResult.value;
   }
-  return BigInt.fromI32(totalSupplyValue as i32);
+  return totalSupplyValue;
 }
 
 export function fetchTokenDecimals(tokenAddress: Address): BigInt {
@@ -140,7 +141,7 @@ export function fetchTokenDecimals(tokenAddress: Address): BigInt {
   if (!decimalResult.reverted) {
     decimalValue = decimalResult.value;
   }
-  return BigInt.fromI32(decimalValue as i32);
+  return BigInt.fromI32(decimalValue);
 }
 
 export function createLiquidityPosition(
@@ -178,7 +179,7 @@ export function createUser(address: Address): void {
 
 export function createLiquiditySnapshot(
   position: LiquidityPosition,
-  event: any
+  event: ethereum.Event
 ): void {
   let timestamp = event.block.timestamp.toI32();
   let bundle = Bundle.load("1")!;
