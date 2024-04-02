@@ -71,6 +71,10 @@ let WHITELIST: string[] = [
   "0xeceeefcee421d8062ef8d6b4d814efe4dc898265", // USDT
   "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75", // pundix
   "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687", // PURSE
+  "0xc8b4d3e67238e38b20d38908646ff6f4f48de5ec", // BAVA
+  "0x934b9f502dced1ebf0594c7384eb299bc3ca2be6", // AIMEOW
+  "0xd498e747ad8a5451c0842188f75907210ab0540a", // WFF
+  "0xb313607b89cb187a57bbf245ceca8c25bc2b2cac", // ROOR
 ];
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
