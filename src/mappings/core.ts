@@ -43,7 +43,7 @@ import {
 } from "./helpers";
 
 function isCompleteMint(mintId: string): boolean {
-  return MintEvent.load(mintId).sender !== null; // sufficient checks
+  return MintEvent.load(mintId)!.sender !== null; // sufficient checks
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -65,7 +65,7 @@ export function handleTransfer(event: Transfer): void {
   createUser(to);
 
   // get pair and load contract
-  let pair = Pair.load(event.address.toHexString());
+  let pair = Pair.load(event.address.toHexString())!;
   let pairContract = PairContract.bind(event.address);
 
   // liquidity token amount being transfered
@@ -90,7 +90,7 @@ export function handleTransfer(event: Transfer): void {
     pair.save();
 
     // create new mint if no mints so far or if last one is done already
-    if (mints.length === 0 || isCompleteMint(mints[mints.length - 1])) {
+    if (mints.length === 0 || isCompleteMint(mints[mints.length - 1]!)) {
       let mint = new MintEvent(
         event.transaction.hash
           .toHexString()
@@ -110,7 +110,7 @@ export function handleTransfer(event: Transfer): void {
 
       // save entities
       transaction.save();
-      factory.save();
+      factory!.save();
     }
   }
 
@@ -152,8 +152,8 @@ export function handleTransfer(event: Transfer): void {
     let burns = transaction.burns;
     let burn: BurnEvent;
     if (burns.length > 0) {
-      let currentBurn = BurnEvent.load(burns[burns.length - 1]);
-      if (currentBurn.needsComplete) {
+      let currentBurn = BurnEvent.load(burns[burns.length - 1]!);
+      if (currentBurn!.needsComplete) {
         burn = currentBurn as BurnEvent;
       } else {
         burn = new BurnEvent(
@@ -185,12 +185,12 @@ export function handleTransfer(event: Transfer): void {
     }
 
     // if this logical burn included a fee mint, account for this
-    if (mints.length !== 0 && !isCompleteMint(mints[mints.length - 1])) {
-      let mint = MintEvent.load(mints[mints.length - 1]);
+    if (mints.length !== 0 && !isCompleteMint(mints[mints.length - 1]!)) {
+      let mint = MintEvent.load(mints[mints.length - 1]!)!;
       burn.feeTo = mint.to;
       burn.feeLiquidity = mint.liquidity;
       // remove the logical mint
-      store.remove("Mint", mints[mints.length - 1]);
+      store.remove("Mint", mints[mints.length - 1]!);
       // update the transaction
 
       // TODO: Consider using .slice().pop() to protect against unintended
@@ -246,10 +246,10 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleSync(event: Sync): void {
-  let pair = Pair.load(event.address.toHex());
-  let token0 = Token.load(pair.token0);
-  let token1 = Token.load(pair.token1);
-  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS);
+  let pair = Pair.load(event.address.toHex())!;
+  let token0 = Token.load(pair.token0)!;
+  let token1 = Token.load(pair.token1)!;
+  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
 
   // reset factory liquidity by subtracting onluy tarcked liquidity
   fxswap.totalLiquidityETH = fxswap.totalLiquidityETH.minus(
@@ -273,7 +273,7 @@ export function handleSync(event: Sync): void {
   pair.save();
 
   // update ETH price now that reserves could have changed
-  let bundle = Bundle.load("1");
+  let bundle = Bundle.load("1")!;
   bundle.ethPrice = getEthPriceInUSD();
   bundle.save();
 
@@ -319,15 +319,15 @@ export function handleSync(event: Sync): void {
 }
 
 export function handleMint(event: Mint): void {
-  let transaction = Transaction.load(event.transaction.hash.toHexString());
+  let transaction = Transaction.load(event.transaction.hash.toHexString())!;
   let mints = transaction.mints;
-  let mint = MintEvent.load(mints[mints.length - 1]);
+  let mint = MintEvent.load(mints[mints.length - 1]!)!;
 
-  let pair = Pair.load(event.address.toHex());
-  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS);
+  let pair = Pair.load(event.address.toHex())!;
+  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
 
-  let token0 = Token.load(pair.token0);
-  let token1 = Token.load(pair.token1);
+  let token0 = Token.load(pair.token0)!;
+  let token1 = Token.load(pair.token1)!;
 
   // update exchange info (except balances, sync will cover that)
   let token0Amount = convertTokenToDecimal(
@@ -344,10 +344,10 @@ export function handleMint(event: Mint): void {
   token1.txCount = token1.txCount.plus(ONE_BI);
 
   // get new amounts of USD and ETH for tracking
-  let bundle = Bundle.load("1");
-  let amountTotalUSD = token1.derivedETH
+  let bundle = Bundle.load("1")!;
+  let amountTotalUSD = token1.derivedETH!
     .times(token1Amount)
-    .plus(token0.derivedETH.times(token0Amount))
+    .plus(token0.derivedETH!.times(token0Amount))
     .times(bundle.ethPrice);
 
   // update txn counts
@@ -391,14 +391,14 @@ export function handleBurn(event: Burn): void {
   }
 
   let burns = transaction.burns;
-  let burn = BurnEvent.load(burns[burns.length - 1]);
+  let burn = BurnEvent.load(burns[burns.length - 1]!)!;
 
-  let pair = Pair.load(event.address.toHex());
-  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS);
+  let pair = Pair.load(event.address.toHex())!;
+  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
 
   //update token info
-  let token0 = Token.load(pair.token0);
-  let token1 = Token.load(pair.token1);
+  let token0 = Token.load(pair.token0)!;
+  let token1 = Token.load(pair.token1)!;
   let token0Amount = convertTokenToDecimal(
     event.params.amount0,
     token0.decimals
@@ -413,10 +413,10 @@ export function handleBurn(event: Burn): void {
   token1.txCount = token1.txCount.plus(ONE_BI);
 
   // get new amounts of USD and ETH for tracking
-  let bundle = Bundle.load("1");
-  let amountTotalUSD = token1.derivedETH
+  let bundle = Bundle.load("1")!;
+  let amountTotalUSD = token1.derivedETH!
     .times(token1Amount)
-    .plus(token0.derivedETH.times(token0Amount))
+    .plus(token0.derivedETH!.times(token0Amount))
     .times(bundle.ethPrice);
 
   // update txn counts
@@ -454,9 +454,9 @@ export function handleBurn(event: Burn): void {
 }
 
 export function handleSwap(event: Swap): void {
-  let pair = Pair.load(event.address.toHexString());
-  let token0 = Token.load(pair.token0);
-  let token1 = Token.load(pair.token1);
+  let pair = Pair.load(event.address.toHexString())!;
+  let token0 = Token.load(pair.token0)!;
+  let token1 = Token.load(pair.token1)!;
   let amount0In = convertTokenToDecimal(
     event.params.amount0In,
     token0.decimals
@@ -479,12 +479,12 @@ export function handleSwap(event: Swap): void {
   let amount1Total = amount1Out.plus(amount1In);
 
   // ETH/USD prices
-  let bundle = Bundle.load("1");
+  let bundle = Bundle.load("1")!;
 
   // get total amounts of derived USD and ETH for tracking
-  let derivedAmountETH = token1.derivedETH
+  let derivedAmountETH = token1.derivedETH!
     .times(amount1Total)
-    .plus(token0.derivedETH.times(amount0Total))
+    .plus(token0.derivedETH!.times(amount0Total))
     .div(BigDecimal.fromString("2"));
   let derivedAmountUSD = derivedAmountETH.times(bundle.ethPrice);
 
@@ -527,7 +527,7 @@ export function handleSwap(event: Swap): void {
   pair.save();
 
   // update global values, only used tracked amounts for volume
-  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS);
+  let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
   fxswap.totalVolumeUSD = fxswap.totalVolumeUSD.plus(trackedAmountUSD);
   fxswap.totalVolumeETH = fxswap.totalVolumeETH.plus(trackedAmountETH);
   fxswap.untrackedVolumeUSD = fxswap.untrackedVolumeUSD.plus(derivedAmountUSD);

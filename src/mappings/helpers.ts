@@ -4,7 +4,6 @@ import {
   BigInt,
   BigDecimal,
   Address,
-  EthereumEvent,
 } from "@graphprotocol/graph-ts";
 import { ERC20 } from "../types/Factory/ERC20";
 import { ERC20SymbolBytes } from "../types/Factory/ERC20SymbolBytes";
@@ -50,7 +49,7 @@ export function bigDecimalExp18(): BigDecimal {
 }
 
 export function convertEthToDecimal(eth: BigInt): BigDecimal {
-  return eth.toBigDecimal().div(exponentToBigDecimal(18));
+  return eth.toBigDecimal().div(exponentToBigDecimal(BI_18));
 }
 
 export function convertTokenToDecimal(
@@ -154,7 +153,7 @@ export function createLiquidityPosition(
     .concat(user.toHexString());
   let liquidityTokenBalance = LiquidityPosition.load(id);
   if (liquidityTokenBalance === null) {
-    let pair = Pair.load(exchange.toHexString());
+    let pair = Pair.load(exchange.toHexString())!;
     pair.liquidityProviderCount = pair.liquidityProviderCount.plus(ONE_BI);
     liquidityTokenBalance = new LiquidityPosition(id);
     liquidityTokenBalance.liquidityTokenBalance = ZERO_BD;
@@ -179,13 +178,13 @@ export function createUser(address: Address): void {
 
 export function createLiquiditySnapshot(
   position: LiquidityPosition,
-  event: EthereumEvent
+  event: any
 ): void {
   let timestamp = event.block.timestamp.toI32();
-  let bundle = Bundle.load("1");
-  let pair = Pair.load(position.pair);
-  let token0 = Token.load(pair.token0);
-  let token1 = Token.load(pair.token1);
+  let bundle = Bundle.load("1")!;
+  let pair = Pair.load(position.pair)!;
+  let token0 = Token.load(pair.token0)!;
+  let token1 = Token.load(pair.token1)!;
 
   // create new snapshot
   let snapshot = new LiquidityPositionSnapshot(
@@ -196,8 +195,8 @@ export function createLiquiditySnapshot(
   snapshot.block = event.block.number.toI32();
   snapshot.user = position.user;
   snapshot.pair = position.pair;
-  snapshot.token0PriceUSD = token0.derivedETH.times(bundle.ethPrice);
-  snapshot.token1PriceUSD = token1.derivedETH.times(bundle.ethPrice);
+  snapshot.token0PriceUSD = token0.derivedETH!.times(bundle.ethPrice);
+  snapshot.token1PriceUSD = token1.derivedETH!.times(bundle.ethPrice);
   snapshot.reserve0 = pair.reserve0;
   snapshot.reserve1 = pair.reserve1;
   snapshot.reserveUSD = pair.reserveUSD;
