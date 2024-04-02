@@ -90,7 +90,7 @@ export function handleTransfer(event: Transfer): void {
     pair.save();
 
     // create new mint if no mints so far or if last one is done already
-    if (mints.length === 0 || isCompleteMint(mints[mints.length - 1]!)) {
+    if (mints.length === 0 || isCompleteMint(mints[mints.length - 1])) {
       let mint = new MintEvent(
         event.transaction.hash
           .toHexString()
@@ -152,7 +152,7 @@ export function handleTransfer(event: Transfer): void {
     let burns = transaction.burns;
     let burn: BurnEvent;
     if (burns.length > 0) {
-      let currentBurn = BurnEvent.load(burns[burns.length - 1]!);
+      let currentBurn = BurnEvent.load(burns[burns.length - 1]);
       if (currentBurn!.needsComplete) {
         burn = currentBurn as BurnEvent;
       } else {
@@ -185,12 +185,12 @@ export function handleTransfer(event: Transfer): void {
     }
 
     // if this logical burn included a fee mint, account for this
-    if (mints.length !== 0 && !isCompleteMint(mints[mints.length - 1]!)) {
-      let mint = MintEvent.load(mints[mints.length - 1]!)!;
+    if (mints.length !== 0 && !isCompleteMint(mints[mints.length - 1])) {
+      let mint = MintEvent.load(mints[mints.length - 1])!;
       burn.feeTo = mint.to;
       burn.feeLiquidity = mint.liquidity;
       // remove the logical mint
-      store.remove("Mint", mints[mints.length - 1]!);
+      store.remove("Mint", mints[mints.length - 1]);
       // update the transaction
 
       // TODO: Consider using .slice().pop() to protect against unintended
@@ -321,7 +321,7 @@ export function handleSync(event: Sync): void {
 export function handleMint(event: Mint): void {
   let transaction = Transaction.load(event.transaction.hash.toHexString())!;
   let mints = transaction.mints;
-  let mint = MintEvent.load(mints[mints.length - 1]!)!;
+  let mint = MintEvent.load(mints[mints.length - 1])!;
 
   let pair = Pair.load(event.address.toHex())!;
   let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
@@ -391,7 +391,7 @@ export function handleBurn(event: Burn): void {
   }
 
   let burns = transaction.burns;
-  let burn = BurnEvent.load(burns[burns.length - 1]!)!;
+  let burn = BurnEvent.load(burns[burns.length - 1])!;
 
   let pair = Pair.load(event.address.toHex())!;
   let fxswap = FXSwapFactory.load(FACTORY_ADDRESS)!;
