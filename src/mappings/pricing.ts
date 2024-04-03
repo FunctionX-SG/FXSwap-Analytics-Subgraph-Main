@@ -232,3 +232,7 @@ export function getTrackedLiquidityUSD(
   // neither token is on white list, tracked volume is 0
   return ZERO_BD;
 }
+
+export function isWhitelistToken(token: string): boolean {
+  return WHITELIST.includes(token)
+}

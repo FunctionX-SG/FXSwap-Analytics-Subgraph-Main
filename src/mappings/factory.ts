@@ -12,6 +12,7 @@ import {
   ZERO_BD,
   ZERO_BI,
 } from './helpers'
+import { isWhitelistToken } from './pricing'
 
 export function handleNewPair(event: PairCreated): void {
   // load factory (create if first exchange)
@@ -41,6 +42,7 @@ export function handleNewPair(event: PairCreated): void {
   // fetch info if null
   if (token0 === null) {
     token0 = new Token(event.params.token0.toHexString())
+    token0.isWhitelist = isWhitelistToken(event.params.token0.toHexString())
     token0.symbol = fetchTokenSymbol(event.params.token0)
     token0.name = fetchTokenName(event.params.token0)
     token0.totalSupply = fetchTokenTotalSupply(event.params.token0)
@@ -65,6 +67,7 @@ export function handleNewPair(event: PairCreated): void {
   // fetch info if null
   if (token1 === null) {
     token1 = new Token(event.params.token1.toHexString())
+    token1.isWhitelist = isWhitelistToken(event.params.token1.toHexString())
     token1.symbol = fetchTokenSymbol(event.params.token1)
     token1.name = fetchTokenName(event.params.token1)
     token1.totalSupply = fetchTokenTotalSupply(event.params.token1)
@@ -103,6 +106,7 @@ export function handleNewPair(event: PairCreated): void {
   pair.untrackedVolumeUSD = ZERO_BD
   pair.token0Price = ZERO_BD
   pair.token1Price = ZERO_BD
+  pair.isTracked = token0.isWhitelist || token1.isWhitelist
 
   // create the tracked contract based on the template
   PairTemplate.create(event.params.pair)
