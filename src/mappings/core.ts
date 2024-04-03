@@ -368,14 +368,14 @@ export function handleMint(event: Mint): void {
   mint.amountUSD = amountTotalUSD as BigDecimal;
   mint.save();
 
-  log.info("line 371: handleMint: mint.to.toString()={}",[mint.to.toString()])
-  log.info("line 372: handleMint: (mint.to as Address).toString()={}",[(mint.to as Address).toString()])
-  log.info("line 373: handleMint: event.address.toString={} ",[event.address.toString()])
+  log.info("line 371: handleMint: mint.to.toHexString()={}",[mint.to.toHexString()])
+  log.info("line 372: handleMint: Address.fromBytes(mint.to).toHexString()={}",[Address.fromBytes(mint.to).toHexString()])
+  log.info("line 373: handleMint: event.address.toHexString={} ",[event.address.toHexString()])
 
   // update the LP position
   let liquidityPosition = createLiquidityPosition(
     event.address,
-    mint.to as Address
+    Address.fromBytes(mint.to)
   );
   createLiquiditySnapshot(liquidityPosition, event);
 
@@ -446,7 +446,7 @@ export function handleBurn(event: Burn): void {
   // update the LP position
   let liquidityPosition = createLiquidityPosition(
     event.address,
-    burn.sender as Address
+    Address.fromBytes(burn.sender!)
   );
   createLiquiditySnapshot(liquidityPosition, event);
 
