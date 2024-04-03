@@ -116,4 +116,6 @@ export function handleNewPair(event: PairCreated): void {
   token1.save()
   pair.save()
   factory.save()
+
+  log.info("Created a new pair",[event.params.pair.toHexString()])
 }

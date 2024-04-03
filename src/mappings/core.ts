@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */
 import { BigInt, BigDecimal, store, Address } from "@graphprotocol/graph-ts";
+import { log } from '@graphprotocol/graph-ts'
 import {
   Pair,
   Token,
@@ -366,6 +367,10 @@ export function handleMint(event: Mint): void {
   mint.logIndex = event.logIndex;
   mint.amountUSD = amountTotalUSD as BigDecimal;
   mint.save();
+
+  log.info("line 371: handleMint: mint.to.toString()={}",[mint.to.toString()])
+  log.info("line 372: handleMint: (mint.to as Address).toString()={}",[(mint.to as Address).toString()])
+  log.info("line 373: handleMint: event.address.toString={} ",[event.address.toString()])
 
   // update the LP position
   let liquidityPosition = createLiquidityPosition(
