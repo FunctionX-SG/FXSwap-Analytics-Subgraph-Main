@@ -9,6 +9,7 @@ import {
   Mint as MintEvent,
   Burn as BurnEvent,
   Swap as SwapEvent,
+  Trade,
   Bundle,
 } from "../types/schema";
 import {
@@ -35,9 +36,11 @@ import {
   convertTokenToDecimal,
   ADDRESS_ZERO,
   FACTORY_ADDRESS,
+  ROUTER,
   ONE_BI,
   createUser,
   createLiquidityPosition,
+  getOrCreateUser,
   ZERO_BD,
   BI_18,
   createLiquiditySnapshot,
@@ -368,10 +371,6 @@ export function handleMint(event: Mint): void {
   mint.amountUSD = amountTotalUSD as BigDecimal;
   mint.save();
 
-  log.info("line 371: handleMint: mint.to.toHexString()={}",[mint.to.toHexString()])
-  log.info("line 372: handleMint: Address.fromBytes(mint.to).toHexString()={}",[Address.fromBytes(mint.to).toHexString()])
-  log.info("line 373: handleMint: event.address.toHexString={} ",[event.address.toHexString()])
-
   // update the LP position
   let liquidityPosition = createLiquidityPosition(
     event.address,
@@ -586,6 +585,33 @@ export function handleSwap(event: Swap): void {
   swaps.push(swap.id);
   transaction.swaps = swaps;
   transaction.save();
+
+  // get user
+  let userAddress = event.params.to;
+  // event.params.to === ROUTER means that swap token for FX, will need to read tx.origin as user
+  if (event.params.to === Address.fromString(ROUTER)){
+    userAddress = event.transaction.from;
+  }
+  let user = getOrCreateUser(userAddress);
+
+  // update trade
+  let trade = new Trade(event.transaction.hash.toHexString())
+  trade.timestamp = transaction.timestamp;
+  trade.pair = pair.id;
+  trade.amount0In = amount0In;
+  trade.amount1In = amount1In;
+  trade.amount0Out = amount0Out;
+  trade.amount1Out = amount1Out;
+  trade.account = user.id;
+  trade.amountUSD =
+    trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD;
+  trade.cumulativePoint = trade.cumulativePoint.plus(user.cumulativePoint);
+  trade.save()
+
+  // update user
+  user.cumulativePoint = trade.cumulativePoint;
+  user.lastUpdated = trade.timestamp;
+  user.save()
 
   // update day entities
   let pairDayData = updatePairDayData(event);

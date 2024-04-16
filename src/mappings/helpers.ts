@@ -21,7 +21,7 @@ import { Factory as FactoryContract } from "../types/templates/Pair/Factory";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 export const FACTORY_ADDRESS = "0x9E229BE3812228454499FAf771b296bedFe8c904"; // original - '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-
+export const ROUTER = "0x4de97358343e530f2f49b76ddd7b151b21e16c57";
 export let ZERO_BI = BigInt.fromI32(0);
 export let ONE_BI = BigInt.fromI32(1);
 export let ZERO_BD = BigDecimal.fromString("0");
@@ -173,8 +173,20 @@ export function createUser(address: Address): void {
   if (user === null) {
     user = new User(address.toHexString());
     user.usdSwapped = ZERO_BD;
+    user.cumulativePoint = ZERO_BD;
     user.save();
   }
+}
+
+export function getOrCreateUser(address: Address): User {
+  let user = User.load(address.toHexString());
+  if (user === null) {
+    user = new User(address.toHexString());
+    user.usdSwapped = ZERO_BD;
+    user.cumulativePoint = ZERO_BD;
+    user.save();
+  }
+  return user;
 }
 
 export function createLiquiditySnapshot(
