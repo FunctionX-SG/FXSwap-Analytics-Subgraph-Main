@@ -570,7 +570,9 @@ export function handleSwap(event: Swap): void {
   swap.amount1In = amount1In;
   swap.amount0Out = amount0Out;
   swap.amount1Out = amount1Out;
-  swap.to = event.params.to;
+  swap.to = 
+    event.params.to.toHexString() == Address.fromString(ROUTER).toHexString() ? 
+    event.transaction.from : event.params.to;
   swap.from = event.transaction.from;
   swap.logIndex = event.logIndex;
   // use the tracked amount if we have it
