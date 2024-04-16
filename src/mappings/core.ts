@@ -587,10 +587,10 @@ export function handleSwap(event: Swap): void {
   transaction.save();
 
   // get user
-  let userAddress = event.params.to;
+  let userAddress = Address.fromBytes(swap.to);
   // event.params.to === ROUTER means that swap token for FX, will need to read tx.origin as user
-  if (event.params.to.toHexString() === ROUTER){
-    userAddress = event.transaction.from;
+  if (Address.fromBytes(swap.to).toHexString() == Address.fromString(ROUTER).toHexString()){
+    userAddress = Address.fromBytes(swap.from);
   }
   let user = getOrCreateUser(userAddress);
 
