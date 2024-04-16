@@ -605,7 +605,7 @@ export function handleSwap(event: Swap): void {
   trade.account = user.id;
   trade.amountUSD =
     trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD;
-  trade.cumulativePoint = trade.cumulativePoint.plus(user.cumulativePoint);
+  trade.cumulativePoint = user.cumulativePoint.plus(trade.amountUSD);
   trade.save()
 
   // update user
