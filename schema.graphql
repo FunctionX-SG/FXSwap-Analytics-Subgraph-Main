@@ -216,6 +216,10 @@ type Swap @entity {
 
   # derived info
   amountUSD: BigDecimal!
+
+  # for point system
+  account: User!
+  cumulativePoint: BigDecimal!
 }
 
 # stores for USD calculations
@@ -306,22 +310,4 @@ type TokenDayData @entity {
 
   # price stats
   priceUSD: BigDecimal!
-}
-
-type Trade @entity {
-  # transaction hash + "-" + index in swaps Transaction array
-  id: ID!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  pair: Pair!
-
-  # populated from the Swap event
-  amount0In: BigDecimal!
-  amount1In: BigDecimal!
-  amount0Out: BigDecimal!
-  amount1Out: BigDecimal!
-
-  # derived info
-  amountUSD: BigDecimal!
-  account: User!
-  cumulativePoint: BigDecimal!
 }

@@ -9,7 +9,6 @@ import {
   Mint as MintEvent,
   Burn as BurnEvent,
   Swap as SwapEvent,
-  Trade,
   Bundle,
 } from "../types/schema";
 import {
@@ -564,7 +563,6 @@ export function handleSwap(event: Swap): void {
   swap.transaction = transaction.id;
   swap.pair = pair.id;
   swap.timestamp = transaction.timestamp;
-  swap.transaction = transaction.id;
   swap.sender = event.params.sender;
   swap.amount0In = amount0In;
   swap.amount1In = amount1In;
@@ -578,7 +576,19 @@ export function handleSwap(event: Swap): void {
   // use the tracked amount if we have it
   swap.amountUSD =
     trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD;
-  swap.save();
+
+  // get user
+  let user = getOrCreateUser(Address.fromBytes(swap.to));
+
+  // update user point
+  swap.account = user.id;
+  swap.cumulativePoint = user.cumulativePoint.plus(swap.amountUSD);
+  swap.save()
+
+  // update user
+  user.cumulativePoint = swap.cumulativePoint;
+  user.lastUpdated = swap.timestamp;
+  user.save()
 
   // update the transaction
 
@@ -587,33 +597,6 @@ export function handleSwap(event: Swap): void {
   swaps.push(swap.id);
   transaction.swaps = swaps;
   transaction.save();
-
-  // get user
-  let userAddress = Address.fromBytes(swap.to);
-  // event.params.to === ROUTER means that swap token for FX, will need to read tx.origin as user
-  if (Address.fromBytes(swap.to).toHexString() == Address.fromString(ROUTER).toHexString()){
-    userAddress = Address.fromBytes(swap.from);
-  }
-  let user = getOrCreateUser(userAddress);
-
-  // update trade
-  let trade = new Trade(event.transaction.hash.toHexString())
-  trade.timestamp = transaction.timestamp;
-  trade.pair = pair.id;
-  trade.amount0In = amount0In;
-  trade.amount1In = amount1In;
-  trade.amount0Out = amount0Out;
-  trade.amount1Out = amount1Out;
-  trade.account = user.id;
-  trade.amountUSD =
-    trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD;
-  trade.cumulativePoint = user.cumulativePoint.plus(trade.amountUSD);
-  trade.save()
-
-  // update user
-  user.cumulativePoint = trade.cumulativePoint;
-  user.lastUpdated = trade.timestamp;
-  user.save()
 
   // update day entities
   let pairDayData = updatePairDayData(event);
