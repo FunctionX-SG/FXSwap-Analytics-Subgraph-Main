@@ -75,6 +75,8 @@ let WHITELIST: string[] = [
   "0x934b9f502dced1ebf0594c7384eb299bc3ca2be6", // AIMEOW
   "0xd498e747ad8a5451c0842188f75907210ab0540a", // WFF
   "0xb313607b89cb187a57bbf245ceca8c25bc2b2cac", // ROOR
+  "0x488b585d98c6f20897c0f9a9310674da0d59df0c", // UNIFART
+  "0x5f9edcf76b5fa2374e67fdcc830a9d6b1681d483" // BZZ
 ];
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
