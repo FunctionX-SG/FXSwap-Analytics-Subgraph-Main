@@ -76,7 +76,15 @@ let WHITELIST: string[] = [
   "0xd498e747ad8a5451c0842188f75907210ab0540a", // WFF
   "0xb313607b89cb187a57bbf245ceca8c25bc2b2cac", // ROOR
   "0x488b585d98c6f20897c0f9a9310674da0d59df0c", // UNIFART
-  "0x5f9edcf76b5fa2374e67fdcc830a9d6b1681d483" // BZZ
+  "0x5f9edcf76b5fa2374e67fdcc830a9d6b1681d483", // BZZ
+  "0x570f7f92b5e127e806495a030ec939f0f95aad11", // CHOP
+  "0x8dd1cc0551858e1304c80310139846326e064a34", // BBX
+  "0x67b32ed48427c73f780aee0bcc056c98c66c122c", // DAMA
+  "0x07f3e6fbfd75d0e570517a71dea11c6714b69082", // FETH
+  "0x22960bac2ebf0e147e6a5f4875ec73660e2aae49", // SIC
+  "0x9b50213ab183d48a24e917103ed9681a9ede1d11", // STRK
+  "0x25d6eee7562d7794bfc99c45c28fc5d3c07ec69b", // MOOM
+  "0x26a1e7b3d2526fb239bceca92cfc9386026a39b6" // EBC
 ];
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
