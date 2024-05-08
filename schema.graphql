@@ -55,6 +55,10 @@ type Token @entity {
 
   # tracked
   isWhitelist: Boolean
+
+  # creation stats
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
 }
 
 type Pair @entity {

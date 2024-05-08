@@ -62,6 +62,8 @@ export function handleNewPair(event: PairCreated): void {
     token0.totalLiquidity = ZERO_BD
     // token0.allPairs = []
     token0.txCount = ZERO_BI
+    token0.createdAtTimestamp = event.block.timestamp
+    token0.createdAtBlockNumber = event.block.number
   }
 
   // fetch info if null
@@ -85,6 +87,8 @@ export function handleNewPair(event: PairCreated): void {
     token1.totalLiquidity = ZERO_BD
     // token1.allPairs = []
     token1.txCount = ZERO_BI
+    token1.createdAtTimestamp = event.block.timestamp
+    token1.createdAtBlockNumber = event.block.number
   }
 
   let pair = new Pair(event.params.pair.toHexString()) as Pair
