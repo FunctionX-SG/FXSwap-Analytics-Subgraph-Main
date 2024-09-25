@@ -4,11 +4,11 @@ import {
   BigInt,
   BigDecimal,
   Address,
-  ethereum
+  ethereum,
 } from "@graphprotocol/graph-ts";
-import { ERC20 } from "../types/Factory/ERC20";
-import { ERC20SymbolBytes } from "../types/Factory/ERC20SymbolBytes";
-import { ERC20NameBytes } from "../types/Factory/ERC20NameBytes";
+import { ERC20 } from "../../generated/Factory/ERC20";
+import { ERC20SymbolBytes } from "../../generated/Factory/ERC20SymbolBytes";
+import { ERC20NameBytes } from "../../generated/Factory/ERC20NameBytes";
 import {
   User,
   Bundle,
@@ -16,8 +16,8 @@ import {
   LiquidityPosition,
   LiquidityPositionSnapshot,
   Pair,
-} from "../types/schema";
-import { Factory as FactoryContract } from "../types/templates/Pair/Factory";
+} from "../../generated/schema";
+import { Factory as FactoryContract } from "../../generated/templates/Pair/Factory";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 export const FACTORY_ADDRESS = "0x9E229BE3812228454499FAf771b296bedFe8c904"; // original - '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
@@ -218,4 +218,17 @@ export function createLiquiditySnapshot(
   snapshot.liquidityPosition = position.id;
   snapshot.save();
   position.save();
+}
+
+export function isSameDate(
+  firstTimestamp: BigInt,
+  secondTimestamp: BigInt
+): bool {
+  var firstDate = new Date(firstTimestamp.toI64() * 1000);
+  var secondDate = new Date(secondTimestamp.toI64() * 1000);
+  return firstDate.toDateString() == secondDate.toDateString();
+}
+
+export function getDateString(timestamp: BigInt): string {
+  return new Date(timestamp.toI64() * 1000).toDateString();
 }

@@ -1,6 +1,5 @@
 /* eslint-disable prefer-const */
 import { BigInt, BigDecimal, store, Address } from "@graphprotocol/graph-ts";
-import { log } from '@graphprotocol/graph-ts'
 import {
   Pair,
   Token,
@@ -10,7 +9,7 @@ import {
   Burn as BurnEvent,
   Swap as SwapEvent,
   Bundle,
-} from "../types/schema";
+} from "../../generated/schema";
 import {
   Pair as PairContract,
   Mint,
@@ -18,7 +17,7 @@ import {
   Swap,
   Transfer,
   Sync,
-} from "../types/templates/Pair/Pair";
+} from "../../generated/templates/Pair/Pair";
 import {
   updatePairDayData,
   updateTokenDayData,
@@ -348,8 +347,8 @@ export function handleMint(event: Mint): void {
 
   // get new amounts of USD and ETH for tracking
   let bundle = Bundle.load("1")!;
-  let amountTotalUSD = token1.derivedETH!
-    .times(token1Amount)
+  let amountTotalUSD = token1
+    .derivedETH!.times(token1Amount)
     .plus(token0.derivedETH!.times(token0Amount))
     .times(bundle.ethPrice);
 
@@ -417,8 +416,8 @@ export function handleBurn(event: Burn): void {
 
   // get new amounts of USD and ETH for tracking
   let bundle = Bundle.load("1")!;
-  let amountTotalUSD = token1.derivedETH!
-    .times(token1Amount)
+  let amountTotalUSD = token1
+    .derivedETH!.times(token1Amount)
     .plus(token0.derivedETH!.times(token0Amount))
     .times(bundle.ethPrice);
 
@@ -485,8 +484,8 @@ export function handleSwap(event: Swap): void {
   let bundle = Bundle.load("1")!;
 
   // get total amounts of derived USD and ETH for tracking
-  let derivedAmountETH = token1.derivedETH!
-    .times(amount1Total)
+  let derivedAmountETH = token1
+    .derivedETH!.times(amount1Total)
     .plus(token0.derivedETH!.times(amount0Total))
     .div(BigDecimal.fromString("2"));
   let derivedAmountUSD = derivedAmountETH.times(bundle.ethPrice);
@@ -568,9 +567,10 @@ export function handleSwap(event: Swap): void {
   swap.amount1In = amount1In;
   swap.amount0Out = amount0Out;
   swap.amount1Out = amount1Out;
-  swap.to = 
-    event.params.to.toHexString() == Address.fromString(ROUTER).toHexString() ? 
-    event.transaction.from : event.params.to;
+  swap.to =
+    event.params.to.toHexString() == Address.fromString(ROUTER).toHexString()
+      ? event.transaction.from
+      : event.params.to;
   swap.from = event.transaction.from;
   swap.logIndex = event.logIndex;
   // use the tracked amount if we have it
@@ -583,12 +583,12 @@ export function handleSwap(event: Swap): void {
   // update user point
   swap.account = user.id;
   swap.cumulativePoint = user.cumulativePoint.plus(swap.amountUSD);
-  swap.save()
+  swap.save();
 
   // update user
   user.cumulativePoint = swap.cumulativePoint;
   user.lastUpdated = swap.timestamp;
-  user.save()
+  user.save();
 
   // update the transaction
 

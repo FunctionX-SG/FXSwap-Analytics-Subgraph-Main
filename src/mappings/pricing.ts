@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Pair, Token, Bundle } from "../types/schema";
+import { Pair, Token, Bundle } from "../../generated/schema";
 import { BigDecimal, Address, BigInt } from "@graphprotocol/graph-ts/index";
 import {
   ZERO_BD,
@@ -301,5 +301,5 @@ export function getTrackedLiquidityUSD(
 }
 
 export function isWhitelistToken(token: string): boolean {
-  return WHITELIST.includes(token)
+  return WHITELIST.includes(token) as boolean
 }

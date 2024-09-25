@@ -1,7 +1,4 @@
 {
-  "extends": "./node_modules/@graphprotocol/graph-ts/tsconfig.json",
-  "compilerOptions": {
-    "types": ["@graphprotocol/graph-ts"],
-    "strictNullChecks":false
-  }
+  "extends": "@graphprotocol/graph-ts/types/tsconfig.base.json",
+  "include": ["src", "tests"]
 }

@@ -1,0 +1,119 @@
+/* eslint-disable prefer-const */
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import {
+  Deposit,
+  EmergencyWithdraw,
+  Withdraw,
+} from "../../generated/Liquidity/MasterChef";
+import { getDateString, isSameDate } from "./helpers";
+import { Bundle, MasterchefLiquidityUpdate, MasterchefUser } from "../../generated/schema";
+
+export function handleDeposit(event: Deposit): void {
+  let depositValue = event.params.amount;
+  if (depositValue.equals(BigInt.fromI32(0))) {
+    return;
+  }
+
+  const senderAddressString = event.params.user.toHexString();
+  const eventTimestamp = event.block.timestamp;
+  let userRecord = MasterchefUser.load(senderAddressString);
+
+  if (!userRecord) {
+    userRecord = new MasterchefUser(senderAddressString);
+  }
+
+  if (userRecord.lastLiquidityUpdate) {
+    const lastLiquidityUpdate = MasterchefLiquidityUpdate.load(
+      userRecord.lastLiquidityUpdate!
+    )!;
+    if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
+      lastLiquidityUpdate.accLiquidity = lastLiquidityUpdate.accLiquidity.plus(
+        depositValue
+      );
+      lastLiquidityUpdate.save();
+      return;
+    } else {
+      depositValue = depositValue.plus(lastLiquidityUpdate.accLiquidity);
+    }
+  }
+
+  let entity = new MasterchefLiquidityUpdate(
+    `${senderAddressString}-${getDateString(eventTimestamp)}`
+  );
+  entity.userAddress = senderAddressString;
+  entity.accLiquidity = depositValue;
+  const bundle = Bundle.load("1");
+  if (bundle) {
+    entity.liquidityValue = entity.accLiquidity.toBigDecimal().times(bundle.ethPrice);
+  } else {
+    entity.liquidityValue = BigDecimal.fromString("0")
+  }
+  entity.timestamp = eventTimestamp;
+  entity.save();
+
+  userRecord.lastLiquidityUpdate = entity.id;
+}
+
+export function handleWithdraw(event: Withdraw): void {
+  handleAnyWithdraw(
+    event.params.user,
+    event.params.amount,
+    event.block.timestamp
+  );
+}
+export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
+  handleAnyWithdraw(
+    event.params.user,
+    event.params.amount,
+    event.block.timestamp
+  );
+}
+
+function handleAnyWithdraw(
+  withdrawerAddress: Address,
+  withdrawValue: BigInt,
+  timestamp: BigInt
+): void {
+  if (withdrawValue.equals(BigInt.fromI32(0))) {
+    return;
+  }
+
+  const withdrawerAddressString = withdrawerAddress.toHexString();
+  const eventTimestamp = timestamp;
+  let userRecord = MasterchefUser.load(withdrawerAddressString);
+
+  if (!userRecord) {
+    return;
+  }
+
+  if (userRecord.lastLiquidityUpdate) {
+    const lastLiquidityUpdate = MasterchefLiquidityUpdate.load(
+      userRecord.lastLiquidityUpdate!
+    )!;
+    if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
+      lastLiquidityUpdate.accLiquidity = lastLiquidityUpdate.accLiquidity.plus(
+        withdrawValue
+      );
+      lastLiquidityUpdate.save();
+      return;
+    } else {
+      withdrawValue = withdrawValue.plus(lastLiquidityUpdate.accLiquidity);
+    }
+  }
+
+  let entity = new MasterchefLiquidityUpdate(
+    `${withdrawerAddressString}-${getDateString(eventTimestamp)}`
+  );
+  entity.userAddress = withdrawerAddressString;
+  entity.accLiquidity = withdrawValue;
+  const bundle = Bundle.load("1");
+  if (bundle) {
+    entity.liquidityValue = entity.accLiquidity.toBigDecimal().times(bundle.ethPrice);
+  } else {
+    entity.liquidityValue = BigDecimal.fromString("0")
+  }
+  entity.timestamp = eventTimestamp;
+  entity.save();
+
+  userRecord.lastLiquidityUpdate = entity.id;
+}
