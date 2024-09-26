@@ -41,7 +41,8 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - User
+        - MasterchefUser
+        - MasterchefLiquidityUpdate
       abis:
         - name: MasterChef
           file: ./abis/MasterchefV2.json

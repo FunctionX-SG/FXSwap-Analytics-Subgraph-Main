@@ -318,7 +318,7 @@ type TokenDayData @entity {
 }
 
 type MasterchefLiquidityUpdate @entity {
-  id: String!
+  id: Bytes!
   userAddress: String! # address
   accLiquidity: BigInt!
   liquidityValue: BigDecimal!
