@@ -4,7 +4,7 @@ import {
   Deposit,
   EmergencyWithdraw,
   Withdraw,
-} from "../../generated/Liquidity/MasterChef";
+} from "../../generated/MasterchefLiquidity/MasterChef";
 import { isSameDate } from "./helpers";
 import {
   Bundle,
