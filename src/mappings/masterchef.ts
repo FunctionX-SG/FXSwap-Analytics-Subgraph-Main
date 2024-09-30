@@ -100,11 +100,11 @@ function handleAnyWithdraw(
     )!;
     if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
       lastLiquidityUpdate.accLiquidity =
-        lastLiquidityUpdate.accLiquidity.plus(withdrawValue);
+        lastLiquidityUpdate.accLiquidity.minus(withdrawValue);
       lastLiquidityUpdate.save();
       return;
     } else {
-      withdrawValue = withdrawValue.plus(lastLiquidityUpdate.accLiquidity);
+      withdrawValue = withdrawValue.minus(lastLiquidityUpdate.accLiquidity);
     }
   }
 
