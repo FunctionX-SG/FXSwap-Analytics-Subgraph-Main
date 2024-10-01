@@ -57,6 +57,7 @@ export function handleDeposit(event: Deposit): void {
   entity.save();
 
   userRecord.lastLiquidityUpdate = entity.id;
+  userRecord.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -122,4 +123,5 @@ function handleAnyWithdraw(
   entity.save();
 
   userRecord.lastLiquidityUpdate = entity.id;
+  userRecord.save();
 }
