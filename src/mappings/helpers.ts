@@ -148,10 +148,7 @@ export function createLiquidityPosition(
   exchange: Address,
   user: Address
 ): LiquidityPosition {
-  let id = exchange
-    .toHexString()
-    .concat("-")
-    .concat(user.toHexString());
+  let id = exchange.toHexString().concat("-").concat(user.toHexString());
   let liquidityTokenBalance = LiquidityPosition.load(id);
   if (liquidityTokenBalance === null) {
     let pair = Pair.load(exchange.toHexString())!;
@@ -224,9 +221,9 @@ export function isSameDate(
   firstTimestamp: BigInt,
   secondTimestamp: BigInt
 ): bool {
-  var firstDate = new Date(firstTimestamp.toI64() * 1000);
-  var secondDate = new Date(secondTimestamp.toI64() * 1000);
-  return firstDate.toDateString() == secondDate.toDateString();
+  var firstDate = firstTimestamp.div(BigInt.fromI32(86400));
+  var secondDate = secondTimestamp.div(BigInt.fromI32(86400));
+  return firstDate == secondDate;
 }
 
 export function getDateString(timestamp: BigInt): string {
