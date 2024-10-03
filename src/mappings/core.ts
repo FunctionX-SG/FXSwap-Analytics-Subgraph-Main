@@ -606,45 +606,35 @@ export function handleSwap(event: Swap): void {
   let token1DayData = updateTokenDayData(token1 as Token, event);
 
   // swap specific updating
-  fxswapDayData.dailyVolumeUSD = fxswapDayData.dailyVolumeUSD.plus(
-    trackedAmountUSD
-  );
-  fxswapDayData.dailyVolumeETH = fxswapDayData.dailyVolumeETH.plus(
-    trackedAmountETH
-  );
-  fxswapDayData.dailyVolumeUntracked = fxswapDayData.dailyVolumeUntracked.plus(
-    derivedAmountUSD
-  );
+  fxswapDayData.dailyVolumeUSD =
+    fxswapDayData.dailyVolumeUSD.plus(trackedAmountUSD);
+  fxswapDayData.dailyVolumeETH =
+    fxswapDayData.dailyVolumeETH.plus(trackedAmountETH);
+  fxswapDayData.dailyVolumeUntracked =
+    fxswapDayData.dailyVolumeUntracked.plus(derivedAmountUSD);
   fxswapDayData.save();
 
   // swap specific updating for pair
-  pairDayData.dailyVolumeToken0 = pairDayData.dailyVolumeToken0.plus(
-    amount0Total
-  );
-  pairDayData.dailyVolumeToken1 = pairDayData.dailyVolumeToken1.plus(
-    amount1Total
-  );
-  pairDayData.dailyVolumeUSD = pairDayData.dailyVolumeUSD.plus(
-    trackedAmountUSD
-  );
+  pairDayData.dailyVolumeToken0 =
+    pairDayData.dailyVolumeToken0.plus(amount0Total);
+  pairDayData.dailyVolumeToken1 =
+    pairDayData.dailyVolumeToken1.plus(amount1Total);
+  pairDayData.dailyVolumeUSD =
+    pairDayData.dailyVolumeUSD.plus(trackedAmountUSD);
   pairDayData.save();
 
   // update hourly pair data
-  pairHourData.hourlyVolumeToken0 = pairHourData.hourlyVolumeToken0.plus(
-    amount0Total
-  );
-  pairHourData.hourlyVolumeToken1 = pairHourData.hourlyVolumeToken1.plus(
-    amount1Total
-  );
-  pairHourData.hourlyVolumeUSD = pairHourData.hourlyVolumeUSD.plus(
-    trackedAmountUSD
-  );
+  pairHourData.hourlyVolumeToken0 =
+    pairHourData.hourlyVolumeToken0.plus(amount0Total);
+  pairHourData.hourlyVolumeToken1 =
+    pairHourData.hourlyVolumeToken1.plus(amount1Total);
+  pairHourData.hourlyVolumeUSD =
+    pairHourData.hourlyVolumeUSD.plus(trackedAmountUSD);
   pairHourData.save();
 
   // swap specific updating for token0
-  token0DayData.dailyVolumeToken = token0DayData.dailyVolumeToken.plus(
-    amount0Total
-  );
+  token0DayData.dailyVolumeToken =
+    token0DayData.dailyVolumeToken.plus(amount0Total);
   token0DayData.dailyVolumeETH = token0DayData.dailyVolumeETH.plus(
     amount0Total.times(token0.derivedETH as BigDecimal)
   );
@@ -654,9 +644,8 @@ export function handleSwap(event: Swap): void {
   token0DayData.save();
 
   // swap specific updating
-  token1DayData.dailyVolumeToken = token1DayData.dailyVolumeToken.plus(
-    amount1Total
-  );
+  token1DayData.dailyVolumeToken =
+    token1DayData.dailyVolumeToken.plus(amount1Total);
   token1DayData.dailyVolumeETH = token1DayData.dailyVolumeETH.plus(
     amount1Total.times(token1.derivedETH as BigDecimal)
   );

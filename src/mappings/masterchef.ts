@@ -1,11 +1,10 @@
-/* eslint-disable prefer-const */
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   EmergencyWithdraw,
   Withdraw,
 } from "../../generated/MasterchefLiquidity/MasterChef";
-import { isSameDate } from "./helpers";
+import { BI_18, convertTokenToDecimal, isSameDate, ZERO_BD } from "./helpers";
 import {
   Bundle,
   MasterchefLiquidityUpdate,
@@ -17,6 +16,9 @@ export function handleDeposit(event: Deposit): void {
   if (depositValue.equals(BigInt.fromI32(0))) {
     return;
   }
+
+  const bundle = Bundle.load("1");
+  const fxPrice = bundle ? bundle.ethPrice : BigDecimal.fromString("0");
 
   const senderAddressString = event.params.user.toHexString();
   const eventTimestamp = event.block.timestamp;
@@ -33,10 +35,15 @@ export function handleDeposit(event: Deposit): void {
     if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
       lastLiquidityUpdate.accLiquidity =
         lastLiquidityUpdate.accLiquidity.plus(depositValue);
+      lastLiquidityUpdate.liquidityValue = fxPrice.equals(ZERO_BD)
+        ? ZERO_BD
+        : convertTokenToDecimal(lastLiquidityUpdate.accLiquidity, BI_18).times(
+            fxPrice
+          );
       lastLiquidityUpdate.save();
       return;
     } else {
-      depositValue = depositValue.plus(lastLiquidityUpdate.accLiquidity);
+      depositValue = lastLiquidityUpdate.accLiquidity.plus(depositValue);
     }
   }
 
@@ -45,14 +52,9 @@ export function handleDeposit(event: Deposit): void {
   );
   entity.userAddress = senderAddressString;
   entity.accLiquidity = depositValue;
-  const bundle = Bundle.load("1");
-  if (bundle) {
-    entity.liquidityValue = entity.accLiquidity
-      .toBigDecimal()
-      .times(bundle.ethPrice);
-  } else {
-    entity.liquidityValue = BigDecimal.fromString("0");
-  }
+  entity.liquidityValue = fxPrice.equals(ZERO_BD)
+    ? ZERO_BD
+    : convertTokenToDecimal(entity.accLiquidity, BI_18).times(fxPrice);
   entity.timestamp = eventTimestamp;
   entity.save();
 
@@ -87,6 +89,9 @@ function handleAnyWithdraw(
     return;
   }
 
+  const bundle = Bundle.load("1");
+  const fxPrice = bundle ? bundle.ethPrice : BigDecimal.fromString("0");
+
   const withdrawerAddressString = withdrawerAddress.toHexString();
   const eventTimestamp = timestamp;
   let userRecord = MasterchefUser.load(withdrawerAddressString);
@@ -102,23 +107,24 @@ function handleAnyWithdraw(
     if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
       lastLiquidityUpdate.accLiquidity =
         lastLiquidityUpdate.accLiquidity.minus(withdrawValue);
+      lastLiquidityUpdate.liquidityValue = fxPrice.equals(ZERO_BD)
+        ? ZERO_BD
+        : convertTokenToDecimal(lastLiquidityUpdate.accLiquidity, BI_18).times(
+            fxPrice
+          );
       lastLiquidityUpdate.save();
       return;
     } else {
-      withdrawValue = withdrawValue.minus(lastLiquidityUpdate.accLiquidity);
+      withdrawValue = lastLiquidityUpdate.accLiquidity.minus(withdrawValue);
     }
   }
 
   let entity = new MasterchefLiquidityUpdate(eventId);
+  entity.userAddress = withdrawerAddressString;
   entity.accLiquidity = withdrawValue;
-  const bundle = Bundle.load("1");
-  if (bundle) {
-    entity.liquidityValue = entity.accLiquidity
-      .toBigDecimal()
-      .times(bundle.ethPrice);
-  } else {
-    entity.liquidityValue = BigDecimal.fromString("0");
-  }
+  entity.liquidityValue = fxPrice.equals(ZERO_BD)
+    ? ZERO_BD
+    : convertTokenToDecimal(entity.accLiquidity, BI_18).times(fxPrice);
   entity.timestamp = eventTimestamp;
   entity.save();
 
