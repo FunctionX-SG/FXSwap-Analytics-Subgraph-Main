@@ -12,80 +12,38 @@ import {
 } from "../../generated/schema";
 
 export function handleDeposit(event: Deposit): void {
-  let depositValue = event.params.amount;
-  if (depositValue.equals(BigInt.fromI32(0))) {
-    return;
-  }
-
-  const bundle = Bundle.load("1");
-  const fxPrice = bundle ? bundle.ethPrice : BigDecimal.fromString("0");
-
-  const senderAddressString = event.params.user.toHexString();
-  const eventTimestamp = event.block.timestamp;
-  let userRecord = MasterchefUser.load(senderAddressString);
-
-  if (!userRecord) {
-    userRecord = new MasterchefUser(senderAddressString);
-  }
-
-  if (userRecord.lastLiquidityUpdate) {
-    const lastLiquidityUpdate = MasterchefLiquidityUpdate.load(
-      userRecord.lastLiquidityUpdate!
-    )!;
-    if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
-      lastLiquidityUpdate.accLiquidity =
-        lastLiquidityUpdate.accLiquidity.plus(depositValue);
-      lastLiquidityUpdate.liquidityValue = fxPrice.equals(ZERO_BD)
-        ? ZERO_BD
-        : convertTokenToDecimal(lastLiquidityUpdate.accLiquidity, BI_18).times(
-            fxPrice
-          );
-      lastLiquidityUpdate.save();
-      return;
-    } else {
-      depositValue = lastLiquidityUpdate.accLiquidity.plus(depositValue);
-    }
-  }
-
-  let entity = new MasterchefLiquidityUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.userAddress = senderAddressString;
-  entity.accLiquidity = depositValue;
-  entity.liquidityValue = fxPrice.equals(ZERO_BD)
-    ? ZERO_BD
-    : convertTokenToDecimal(entity.accLiquidity, BI_18).times(fxPrice);
-  entity.timestamp = eventTimestamp;
-  entity.save();
-
-  userRecord.lastLiquidityUpdate = entity.id;
-  userRecord.save();
-}
-
-export function handleWithdraw(event: Withdraw): void {
-  handleAnyWithdraw(
+  handleDelta(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
     event.params.user,
     event.params.amount,
+    event.block.timestamp
+  );
+}
+
+export function handleWithdraw(event: Withdraw): void {
+  handleDelta(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.params.user,
+    event.params.amount.neg(),
     event.block.timestamp
   );
 }
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
-  handleAnyWithdraw(
+  handleDelta(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
     event.params.user,
-    event.params.amount,
+    event.params.amount.neg(),
     event.block.timestamp
   );
 }
 
-function handleAnyWithdraw(
+function handleDelta(
   eventId: Bytes,
   withdrawerAddress: Address,
-  withdrawValue: BigInt,
+  deltaValue: BigInt,
   timestamp: BigInt
 ): void {
-  if (withdrawValue.equals(BigInt.fromI32(0))) {
+  if (deltaValue.equals(BigInt.fromI32(0))) {
     return;
   }
 
@@ -106,7 +64,7 @@ function handleAnyWithdraw(
     )!;
     if (isSameDate(lastLiquidityUpdate.timestamp, eventTimestamp)) {
       lastLiquidityUpdate.accLiquidity =
-        lastLiquidityUpdate.accLiquidity.minus(withdrawValue);
+        lastLiquidityUpdate.accLiquidity.plus(deltaValue);
       lastLiquidityUpdate.liquidityValue = fxPrice.equals(ZERO_BD)
         ? ZERO_BD
         : convertTokenToDecimal(lastLiquidityUpdate.accLiquidity, BI_18).times(
@@ -115,13 +73,13 @@ function handleAnyWithdraw(
       lastLiquidityUpdate.save();
       return;
     } else {
-      withdrawValue = lastLiquidityUpdate.accLiquidity.minus(withdrawValue);
+      deltaValue = lastLiquidityUpdate.accLiquidity.plus(deltaValue);
     }
   }
 
-  let entity = new MasterchefLiquidityUpdate(eventId);
+  const entity = new MasterchefLiquidityUpdate(eventId);
   entity.userAddress = withdrawerAddressString;
-  entity.accLiquidity = withdrawValue;
+  entity.accLiquidity = deltaValue;
   entity.liquidityValue = fxPrice.equals(ZERO_BD)
     ? ZERO_BD
     : convertTokenToDecimal(entity.accLiquidity, BI_18).times(fxPrice);
