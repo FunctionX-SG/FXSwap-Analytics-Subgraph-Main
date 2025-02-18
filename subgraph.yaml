@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: mainnet
+    network: zetachain-mainnet
     source:
-      address: "0x9E229BE3812228454499FAf771b296bedFe8c904"
+      address: "0x26c2b5f121812e53a771cde8dca4143d6860b3fa"
       abi: Factory
-      startBlock: 5752810
+      startBlock: 3991785
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -32,7 +32,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pair
-    network: mainnet
+    network: zetachain-mainnet
     source:
       abi: Pair
     mapping:

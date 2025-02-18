@@ -20,8 +20,8 @@ import {
 import { Factory as FactoryContract } from "../types/templates/Pair/Factory";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
-export const FACTORY_ADDRESS = "0x9E229BE3812228454499FAf771b296bedFe8c904"; // original - '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-export const ROUTER = "0x4de97358343e530f2f49b76ddd7b151b21e16c57";
+export const FACTORY_ADDRESS = "0x26c2b5f121812e53a771cde8dca4143d6860b3fa"; // original - '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
+export const ROUTER = "0x62eb0ab34fc699bed29d937eab5f115fee37f44d";
 export let ZERO_BI = BigInt.fromI32(0);
 export let ONE_BI = BigInt.fromI32(1);
 export let ZERO_BD = BigDecimal.fromString("0");
